@@ -1,6 +1,6 @@
 import { NegociacoesView, MensagemView } from "../views/index";
 import { Negociacao, Negociacoes, NegociacaoParcial } from "../models/index";
-import { domInject} from "../helpers/decorators/index";
+import { domInject, throttle} from "../helpers/decorators/index";
 
 export class NegociacaoController {
 
@@ -22,9 +22,8 @@ export class NegociacaoController {
         this._negociacoesView.update(this._negociacoes);
     }
 
-    adiciona(event: Event) {
-
-        event.preventDefault();
+    @throttle()
+    adiciona() {
 
         let data = new Date(this._inputData.val().replace(/-/g, ','));
 
@@ -51,6 +50,7 @@ export class NegociacaoController {
         return data.getDay() != DiaDaSemana.Sabado && data.getDay() != DiaDaSemana.Domingo;
     }
 
+    @throttle()
     importaDados() {
 
         function isOk(res: Response) {
@@ -72,7 +72,7 @@ export class NegociacaoController {
                     .forEach(negociacao => this._negociacoes.adiciona(negociacao))
                 this._negociacoesView.update(this._negociacoes);
             })
-            .catch(err => console.log(err.message))
+            .catch(err => console.log(err.message));
     }
 }
 
